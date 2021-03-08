@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.byau.dao.BorrowMapper">
+	<resultMap id="BaseResultMap" type="Borrow">
+		<id column="borrowid" property="borrowId" jdbcType="VARCHAR" />
+		<result column="userid" property="userId" jdbcType="VARCHAR" />
+		<result column="bookid" property="bookId" jdbcType="VARCHAR" />
+		<result column="stime" property="stime" jdbcType="CHAR" />
+		<result column="etime" property="etime" jdbcType="CHAR" />
+		<result column="borrowremark" property="borrowRemark" jdbcType="VARCHAR" />
+	</resultMap>
+
+	<resultMap id="hResultMap" type="Borrow">
+		<id column="borrowid" property="borrowId" jdbcType="VARCHAR" />
+		<result column="userid" property="userId" jdbcType="VARCHAR" />
+		<result column="bookid" property="bookId" jdbcType="VARCHAR" />
+		<result column="stime" property="stime" jdbcType="CHAR" />
+		<result column="etime" property="etime" jdbcType="CHAR" />
+		<result column="borrowremark" property="borrowRemark" jdbcType="VARCHAR" />
+		<association property="borrowKind" javaType="BorrowKind">
+			<id column="kind_id" property="kindId" jdbcType="VARCHAR" />
+		<result column="kind_name" property="kindName" jdbcType="VARCHAR" />
+		<result column="kind_remark" property="kindRemark" jdbcType="VARCHAR" />
+		</association>
+
+
+
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		borrowid, userid, bookid, stime, etime, borrowremark
+	</sql>
+	<select id="getById" resultMap="BaseResultMap"
+		parameterType="java.lang.String">
+		select
+		<include refid="Base_Column_List" />
+		from borrow
+		where borrowid = #{borrowId,jdbcType=VARCHAR}
+	</select>
+
+	<select id="list" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from borrow
+	</select>
+	<select id="count" resultType="java.lang.Integer"
+		parameterType="String">
+		select count(*) from borrow where borrowid like
+		concat('%',#{borrowId},'%')
+	</select>
+
+	
+<select id="listByPage" resultMap="hResultMap">
+		select b.*,bk.kind_name
+
+		from borrowkind bk,borrow b
+		where bk.kind_id=b.bookid and borrowid like
+		concat('%',#{borrowId},'%')
+		
+	     
+	       <if test="bookId != null and bookId != ''" >
+	        and  bookid= #{bookId}
+	       </if>	
+	</select>
+	
+	<delete id="delete">
+		delete from borrow
+		where borrowid = #{borrowId,jdbcType=VARCHAR}
+	</delete>
+	
+	<insert id="save" parameterType="Borrow">
+		insert into borrow
+		<trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="borrowId != null">
+				borrowid,
+			</if>
+			<if test="userId != null">
+				userid,
+			</if>
+			<if test="bookId != null">
+				bookid,
+			</if>
+			<if test="stime != null">
+				stime,
+			</if>
+			<if test="etime != null">
+				etime,
+			</if>
+			<if test="borrowRemark != null">
+				borrowremark,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="borrowId != null">
+				#{borrowId,jdbcType=VARCHAR},
+			</if>
+
+			<if test="userId != null">
+				#{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="bookId != null">
+				#{bookId,jdbcType=VARCHAR},
+			</if>
+			<if test="stime != null">
+				#{stime,jdbcType=CHAR},
+			</if>
+			<if test="etime != null">
+				#{etime,jdbcType=CHAR},
+			</if>
+			<if test="borrowRemark != null">
+				#{borrowRemark,jdbcType=VARCHAR},
+			</if>
+		</trim>
+	</insert>
+		<update id="update" parameterType="Borrow">
+		update borrow
+		<set>
+
+			<if test="userId != null">
+				userid = #{userId,jdbcType=VARCHAR},
+			</if>
+			<if test="bookId != null">
+				bookid = #{bookId,jdbcType=VARCHAR},
+			</if>
+			<if test="stime != null">
+				stime = #{stime,jdbcType=CHAR},
+			</if>
+			<if test="etime != null">
+				etime = #{etime,jdbcType=CHAR},
+			</if>
+			<if test="borrowRemark != null">
+				borrowremark = #{borrowRemark,jdbcType=VARCHAR},
+			</if>
+		</set>
+		where borrowid =#{borrowId,jdbcType=VARCHAR}
+	</update>
+	
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		insert into borrow (borrowid, userid,
+		bookid, stime, etime,
+		borrowremark) values
+		<foreach collection="list"  item="borrow"
+			separator=",">
+			(#{borrow.borrowId,jdbcType=VARCHAR}, #{borrow.userId,jdbcType=VARCHAR},
+			#{borrow.bookId,jdbcType=VARCHAR},
+			#{borrow.stime,jdbcType=CHAR},
+			#{borrow.etime,jdbcType=CHAR},
+			#{borrow.borrowRemark,jdbcType=VARCHAR})
+		</foreach>
+	</insert>
+	<delete id="deleteBatch" parameterType="String">
+        delete from borrow where borrowid in
+        <foreach item="borrowId" collection="array" open="(" separator="," close=")">
+            #{borrowId}
+        </foreach>
+    </delete>
+	
+</mapper>

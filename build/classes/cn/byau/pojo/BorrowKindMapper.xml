@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.byau.dao.BorrowKindMapper">
+	<resultMap id="BaseResultMap" type="BorrowKind">
+		<id column="kind_id" property="kindId" jdbcType="VARCHAR" />
+		<result column="kind_name" property="kindName" jdbcType="VARCHAR" />
+		<result column="kind_remark" property="kindRemark" jdbcType="VARCHAR" />
+	</resultMap>
+	<resultMap id="BaseResultMap2" type="BorrowKind">
+		<id column="kind_id" property="kindId" jdbcType="VARCHAR" />
+		<result column="kind_name" property="kindName" jdbcType="VARCHAR" />
+		<result column="kind_remark" property="kindRemark" jdbcType="VARCHAR" />
+		<collection property="borrowList" ofType="Borrow">
+			    <id column="borrowid" property="borrowId" jdbcType="VARCHAR" />
+			<result column="userid" property="userId" jdbcType="VARCHAR" />
+			<result column="bookid" property="bookId" jdbcType="VARCHAR" />
+				
+			<result column="stime" property="stime" jdbcType="CHAR" />
+			<result column="etime" property="etime" jdbcType="CHAR" />
+			<result column="borrowremark" property="borrowRemark" jdbcType="VARCHAR" />
+		</collection>
+
+
+	</resultMap>
+
+	<select id="getByKindId" resultMap="BaseResultMap2"
+		parameterType="String">
+		select b.*,bk.kind_name,bk.kind_remark
+		from borrowkind bk,borrow b
+		where bk.kind_id=b.bookid and bk.kind_id=#{kind_id};
+	</select>
+
+	<sql id="Base_Column_List">
+		kind_id, kind_name, kind_remark
+	</sql>
+	
+	<select id="list" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from borrowkind
+
+	</select>
+	
+</mapper>
